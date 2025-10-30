@@ -7,7 +7,7 @@ def search_track (track_name):
         "no_warnings": True,
         "format": "best",
         "noplaylist": True,
-        "skip_download": True
+        "skip_download": True,
     }
     with YoutubeDL(ydl_opts) as ydl:
         
