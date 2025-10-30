@@ -17,4 +17,6 @@ def change_playlist(new_playlist = "Psy"):
 
 
     shutil.move(os.path.join(base_path, new_playlist, ".nomedia"), os.path.join(base_path, old_playlist, ".nomedia"))
+
+    print(f"Now playing: {new_playlist}")
     
