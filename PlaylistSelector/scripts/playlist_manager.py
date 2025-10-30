@@ -1,7 +1,7 @@
 import os
 import shutil
 
-def change_playlist(new_playlist = "LDN"):
+def change_playlist(new_playlist = "test"):
 
     base_path = "/storage/emulated/0/Music"
     playlists = []
