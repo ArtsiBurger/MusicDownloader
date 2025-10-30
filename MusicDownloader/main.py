@@ -1,7 +1,8 @@
-from spotify_fetch import fetch_tracks
-from youtube_search import search_tracks
-from mp3_download import download_mp3_list
-from user_inputs import get_user_inputs
+from scripts.spotify_fetch import fetch_tracks
+from scripts.youtube_search import search_tracks
+from scripts.mp3_download import download_mp3_list
+from scripts.user_inputs import get_user_inputs
+
 import time
 
 start = time.time()
