@@ -5,14 +5,15 @@ def download_mp3(youtube_url, output_dir):
     ydl_opts = {
         "format": "bestaudio/best",
         "no_warnings": True,
+        "quiet": True,
+        "noplaylist": True,
         "outtmpl": f"{output_dir}/%(title)s.%(ext)s",
         "postprocessors": [{
             "key": "FFmpegExtractAudio",
             "preferredcodec": "mp3",
             "preferredquality": "192",
-        }],
-        "quiet": True,
-        "noplaylist": True
+        }]
+        
     }
     try:
         with YoutubeDL(ydl_opts) as ydl:
