@@ -1,4 +1,4 @@
-from scripts.switch_playlist import disable_playlist
+from scripts.playlist_manager import change_playlist
 
 
-disable_playlist()
+change_playlist()
