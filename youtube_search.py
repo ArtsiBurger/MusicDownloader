@@ -12,10 +12,10 @@ def search_track (track_name):
     }
     with YoutubeDL(ydl_opts) as ydl:
         
-        fallback_limit = 5 # Change this for the amount of fallback searches if the first one was age-restricted
+        search_limit = 5 # Change this for the amount of search results
 
         try: 
-            info = ydl.extract_info(f"ytsearch{fallback_limit}:{track_name}", download=False)
+            info = ydl.extract_info(f"ytsearch{search_limit}:{track_name}", download=False)
         except Exception:
             print(f"Search failed for {track_name}.")
             return None
