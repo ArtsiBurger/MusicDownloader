@@ -15,7 +15,7 @@ def change_playlist(new_playlist = "Psy"):
             old_playlist = p
             break
     if new_playlist == old_playlist:
-        print("You are already on this playlist")
+        print(f"You are already on {new_playlist}.")
         return
 
     shutil.move(os.path.join(base_path, new_playlist, ".nomedia"), os.path.join(base_path, old_playlist, ".nomedia"))
