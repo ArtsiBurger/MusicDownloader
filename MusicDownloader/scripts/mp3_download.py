@@ -1,4 +1,6 @@
 from yt_dlp import YoutubeDL
+import os
+
 
 def download_mp3(youtube_url, output_dir):
 
@@ -21,6 +23,13 @@ def download_mp3(youtube_url, output_dir):
     except Exception as e:
         print(f"Failed to download {youtube_url}: {e}")
 
+def add_env(output_dir):
+    with open(os.path.join(output_dir, ".nomedia")) as f:
+        pass
+    print("ENV ADDED")
+    return
+
+
 def download_mp3_list(url_list, output_dir):
     print("Downloading...")
     j = 0
@@ -35,5 +44,5 @@ def download_mp3_list(url_list, output_dir):
             download_mp3(url, output_dir)
 
         print(f"Progress {i}/{len(url_list)} | Downloaded {i-j}/{len(url_list)} songs. {text}")
-
+    add_env(output_dir)
     print(f"Download completed. The songs can be found in {output_dir}.")

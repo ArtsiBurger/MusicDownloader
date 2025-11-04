@@ -1,10 +1,11 @@
 import os
 import shutil
 
-def change_playlist(new_playlist = "LDN"):
+def change_playlist():
 
     base_path = "/storage/emulated/0/Music"
     playlists = []
+    new_playlist = input("Give the name of the playlist that you would like to play: ")
 
     for f in os.listdir(base_path):
         if os.path.isdir(os.path.join(base_path, f)):
