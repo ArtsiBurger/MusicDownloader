@@ -24,7 +24,7 @@ def download_mp3(youtube_url, output_dir):
         print(f"Failed to download {youtube_url}: {e}")
 
 def add_env(output_dir):
-    with open(os.path.join(output_dir, ".nomedia")) as f:
+    with open(os.path.join(output_dir, ".nomedia"),"w") as f:
         pass
     print("ENV ADDED")
     return
