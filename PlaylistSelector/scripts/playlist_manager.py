@@ -6,7 +6,6 @@ def change_playlist(new_playlist):
     base_path = "/storage/emulated/0/Music"
     playlists = []
     
-
     for f in os.listdir(base_path):
         if os.path.isdir(os.path.join(base_path, f)):
             playlists.append(f)

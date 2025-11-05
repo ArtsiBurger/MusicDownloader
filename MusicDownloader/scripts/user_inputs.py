@@ -9,7 +9,7 @@ def get_user_inputs():
     base_path = "/storage/emulated/0/Music" # For PC: r"C:\Users\pc\Music" | For mobile: "/storage/emulated/0/Music"
     user_folder = input("Give folder name inside Music-folder where the MP3s will be saved to: ")
     if not user_folder:
-        user_folder = "ConvertedMP3s"
+        user_folder = "DownloadedMP3s"
 
     output_dir = os.path.join(base_path,user_folder)
 

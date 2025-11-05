@@ -23,7 +23,7 @@ def download_mp3(youtube_url, output_dir):
     except Exception as e:
         print(f"Failed to download {youtube_url}: {e}")
 
-def add_env(output_dir): # So that the new playlist is hidden until changed to
+def add_env(output_dir): # So that the new playlist is hidden until selected
     with open(os.path.join(output_dir, ".nomedia"),"w") as f:
         pass
     return
