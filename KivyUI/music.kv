@@ -9,10 +9,6 @@
         size_hint_y: None
         height: "40dp"
 
-    Button:
-        text: "Load Playlist"
-        size_hint_y: None
-        height: "40dp"
-        
-    Label:
-        text: "Playlist will show here"
+    RecycleView:
+        viewclass: "Label"
+        data: [{"text": p} for p in root.playlists]
