@@ -1,7 +1,7 @@
 import os
 import shutil
 
-def change_playlist(new_playlist):
+def select_playlist(new_playlist):
 
     base_path = r"C:\Users\pc\Music" # For PC: r"C:\Users\pc\Music" | For mobile: "/storage/emulated/0/Music"
     playlists = []
