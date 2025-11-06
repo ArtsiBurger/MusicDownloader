@@ -5,7 +5,7 @@ from kivy.properties import ListProperty, StringProperty
 from PlaylistSelector.scripts.selector import select_playlist
 
 class PlaylistScreen(BoxLayout):
-    base_path = StringProperty(r"C:\Users\pc\Music") # For PC: r"C:\Users\pc\Music" | For mobile: "/storage/emulated/0/Music"
+    base_path = StringProperty("/storage/emulated/0/Music") # For PC: r"C:\Users\pc\Music" | For mobile: "/storage/emulated/0/Music"
     playlists = ListProperty([])
 
     def __init__(self, **kwargs): # Auto load playlists on start
