@@ -10,8 +10,8 @@
         height: "40dp"
 
     RecycleView:
-        viewclass: "Label"
-        data: [{"text": p} for p in root.playlists]
+        viewclass: "Button"
+        data: [{"text": p, "on_press": lambda x=p: root.on_playlist_selection(x)} for p in root.playlists]
 
         RecycleBoxLayout:
             default_size: None, dp(56)

@@ -2,6 +2,7 @@ import os
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ListProperty, StringProperty
+from PlaylistSelector.scripts.selector import select_playlist
 
 class PlaylistScreen(BoxLayout):
     base_path = StringProperty(r"C:\Users\pc\Music") # For PC: r"C:\Users\pc\Music" | For mobile: "/storage/emulated/0/Music"
@@ -19,6 +20,9 @@ class PlaylistScreen(BoxLayout):
                     self.playlists.append(f)
         except Exception as e:
             print(f"Error loading playlists: {e}")
+
+    def on_playlist_selection(self, new_playlist):
+        select_playlist(new_playlist)
 
 class MusicApp(App):
     def build(self):

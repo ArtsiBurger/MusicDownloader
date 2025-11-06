@@ -2,7 +2,7 @@
   
 - Make widgets for playlist control
 - Find out how to make "tab" work correctly in JSON
-- MusicDownloader & KivyUI have .gitignore files.
+
 
 
 ## User Notes
