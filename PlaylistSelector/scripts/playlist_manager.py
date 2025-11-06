@@ -3,7 +3,7 @@ import shutil
 
 def change_playlist(new_playlist):
 
-    base_path = "/storage/emulated/0/Music"
+    base_path = r"C:\Users\pc\Music" # For PC: r"C:\Users\pc\Music" | For mobile: "/storage/emulated/0/Music"
     playlists = []
     
     for f in os.listdir(base_path): # Sort out only the folders in the base path
