@@ -12,7 +12,7 @@ def search_track (track_name):
     }
     with YoutubeDL(ydl_opts) as ydl:
         
-        search_limit = 5 # Change this for the amount of search results
+        search_limit = 3 # Change this for the amount of search results
 
         try: 
             info = ydl.extract_info(f"ytsearch{search_limit}:{track_name}", download=False)
