@@ -6,11 +6,11 @@ def change_playlist(new_playlist):
     base_path = "/storage/emulated/0/Music"
     playlists = []
     
-    for f in os.listdir(base_path):
+    for f in os.listdir(base_path): # Sort out only the folders in the base path
         if os.path.isdir(os.path.join(base_path, f)):
             playlists.append(f)
 
-    for p in playlists: 
+    for p in playlists: # Search for old playlist
         if not os.path.exists(os.path.join(base_path, p, ".nomedia")):
             old_playlist = p
             break
