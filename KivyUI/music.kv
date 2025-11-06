@@ -1,5 +1,5 @@
 <PlaylistScreen>:
-    orientation: 'vertical'
+    orientation: "vertical"
     spacing: 10
     padding: 20
 
@@ -12,3 +12,10 @@
     RecycleView:
         viewclass: "Label"
         data: [{"text": p} for p in root.playlists]
+
+        RecycleBoxLayout:
+            default_size: None, dp(56)
+            default_size_hint: 1, None
+            size_hint_y: None
+            height: self.minimum_height
+            orientation: "vertical"
