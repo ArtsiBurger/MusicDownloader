@@ -11,7 +11,7 @@
 - Make widgets for playlist control
 - Find out how to make "tab" work correctly in JSON
 - Progress notifications
-- Buildozer sucks, try via Github
+- Try building via Github
 
  
 
