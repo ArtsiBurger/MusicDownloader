@@ -1,10 +1,10 @@
-name: Build Android APK
+name: Build MusicController APK
 
 on:
   push:
-    branches:
-      - main
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   android-build:
@@ -16,37 +16,33 @@ jobs:
       PATH: ${{ github.workspace }}/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin:${{ github.workspace }}/.buildozer/android/platform/android-sdk/platform-tools:${PATH}
 
     steps:
-      # Clone repo using git to avoid tar extraction
-      - name: Clone repository
-        run: git clone ${{ github.repositoryUrl }} ${{ github.workspace }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Show runner info for debugging
-      - name: Debug runner
-        run: |
-          uname -a
-          which python3
-          python3 --version
-          which tar || echo "tar not found"
-          echo $PATH
-
-      # Install Python environment
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
 
-      # Create virtual environment
-      - name: Create venv
-        run: python3 -m venv venv
+      - name: Install Python dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip setuptools wheel
+          pip install buildozer cython
 
-      - name: Activate venv and install Buildozer
+      - name: Prepare Android SDK
+        run: |
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          cd $ANDROID_HOME/cmdline-tools
+          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -o cmdline-tools.zip
+          unzip cmdline-tools.zip
+          rm cmdline-tools.zip
+          mv cmdline-tools latest
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platform-tools" "platforms;android-36" "build-tools;36.1.0"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      - name: Build APK
         run: |
           source venv/bin/activate
-          pip install --upgrade pip
-          pip install buildozer Cython
-
-      # Install Android SDK using Buildozer
-      - name: Initialize Buildozer Android SDK
-        run: |
-          source venv/bin/activate
-          buildozer android debug deploy run
+          buildozer -v android debug
