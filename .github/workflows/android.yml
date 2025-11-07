@@ -14,24 +14,17 @@ jobs:
       ANDROIDNDK: $HOME/.buildozer/android/platform/android-ndk-r25b
       ANDROIDAPI: 31
       ANDROIDMINAPI: 21
-      PATH: $HOME/.local/bin:$PATH
+      PATH: $HOME/.local/bin:$PATH:$ANDROIDSDK/cmdline-tools/latest/bin:$ANDROIDSDK/platform-tools
 
     steps:
-      # Ensure basic tools are installed
-      - name: Install essential tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tar unzip wget git python3-pip build-essential openjdk-17-jdk
+      # Checkout repository
+      - uses: actions/checkout@v3
 
-      # Checkout repo
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Install pip packages needed for Buildozer
+      # Install Python dependencies locally
       - name: Install Python packages
         run: |
-          python3 -m pip install --upgrade pip
-          pip install --user buildozer Cython==0.29.36 virtualenv python-for-android
+          python3 -m pip install --upgrade --user pip
+          pip install --user buildozer Cython==0.29.36 python-for-android virtualenv
 
       # Install Android SDK command-line tools
       - name: Download and setup Android SDK command-line tools
@@ -41,14 +34,16 @@ jobs:
           unzip -q cmdline-tools.zip -d $ANDROIDSDK/cmdline-tools
           mv $ANDROIDSDK/cmdline-tools/cmdline-tools $ANDROIDSDK/cmdline-tools/latest
           rm cmdline-tools.zip
-          yes | $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      # Accept licenses
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager --licenses
 
       # Install required SDK packages
       - name: Install SDK build-tools and platforms
         run: |
           yes | $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-$ANDROIDAPI" "build-tools;36.1.0"
 
-      # Build APK using Buildozer
+      # Build APK
       - name: Build APK
-        run: |
-          buildozer -v android debug
+        run: buildozer -v android debug
