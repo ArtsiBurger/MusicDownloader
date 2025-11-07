@@ -2,19 +2,22 @@ name: Build MusicController APK
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
   android:
     runs-on: ubuntu-latest
-
     env:
       ANDROID_SDK_ROOT: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
-      ANDROID_NDK_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-ndk
-      PATH: ${{ github.workspace }}/.buildozer/android/platform/cmdline-tools/latest/bin:$PATH
+      ANDROID_NDK_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-ndk-r25b
+      PATH: ${{ github.workspace }}/venv/bin:$PATH
 
     steps:
+    - name: Ensure tar is installed
+      run: sudo apt-get update && sudo apt-get install -y tar unzip curl git python3-pip python3-venv build-essential
+
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -23,35 +26,30 @@ jobs:
       with:
         python-version: 3.11
 
-    - name: Set up virtual environment
+    - name: Create and activate virtualenv
       run: |
         python -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
-        pip install cython buildozer
+        pip install buildozer cython
 
-    - name: Install required system tools
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y zip unzip openjdk-17-jdk wget tar curl
-
-    - name: Download Android SDK Command-line Tools
+    - name: Install Android SDK Command Line Tools
       run: |
         mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-        wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
-        unzip -q cmdline-tools.zip -d $ANDROID_SDK_ROOT/cmdline-tools
-        mv $ANDROID_SDK_ROOT/cmdline-tools/cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
-        rm cmdline-tools.zip
+        cd $ANDROID_SDK_ROOT/cmdline-tools
+        curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+        unzip sdk-tools.zip
+        mv cmdline-tools latest
+        rm sdk-tools.zip
 
-    - name: Accept SDK licenses
-      run: |
-        yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+    - name: Accept Android licenses
+      run: yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
 
-    - name: Install SDK build tools & platforms
+    - name: Install Android Build Tools & Platforms
       run: |
         $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;36.1.0"
 
-    - name: Build APK with Buildozer
+    - name: Run Buildozer
       run: |
         source venv/bin/activate
         buildozer -v android debug
