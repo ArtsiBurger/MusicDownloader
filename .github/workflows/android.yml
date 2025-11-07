@@ -1,27 +1,21 @@
 name: Build MusicScripts APK
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
-      # 1. Checkout repository
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # 2. Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
-      # 3. Install system dependencies for Buildozer / libffi
       - name: Install system packages
         run: |
           sudo apt-get update
@@ -34,31 +28,29 @@ jobs:
             build-essential \
             unzip \
             zlib1g-dev \
+            libffi-dev \
             git \
             wget \
             python3-dev \
             python3-pip
 
-      # 4. Install Python dependencies
-      - name: Install Python packages
+      - name: Upgrade pip and install Buildozer
         run: |
-          python -m pip install --upgrade pip
-          pip install cython
-          pip install --upgrade buildozer
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade buildozer cython
 
-      # 5. Pre-accept Android SDK licenses
-      - name: Accept Android licenses
+      - name: Build APK with Buildozer
         run: |
-          mkdir -p $HOME/.android
-          yes | buildozer android update sdk
+          buildozer android debug \
+            --arch=arm64-v8a \
+            --arch=armeabi-v7a \
+            android clean
+          buildozer android debug \
+            --arch=arm64-v8a \
+            --arch=armeabi-v7a
 
-      # 6. Build APK using Buildozer
-      - name: Build APK
-        run: buildozer -v android debug
-
-      # 7. Upload APK as artifact
-      - name: Upload APK
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
-          name: musicscripts-apk
+          name: music-scripts-apk
           path: bin/*.apk
