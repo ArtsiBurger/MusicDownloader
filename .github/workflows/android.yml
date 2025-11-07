@@ -32,7 +32,7 @@ jobs:
       - name: Install Java
         run: sudo apt-get update && sudo apt-get install -y openjdk-17-jdk
 
-      # 5. Build APK (Buildozer handles SDK/NDK download and license acceptance)
+      # 5. Build APK using Buildozer
       - name: Build APK
         run: buildozer -v android debug
 
