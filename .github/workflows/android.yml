@@ -32,11 +32,17 @@ jobs:
       - name: Install Java
         run: sudo apt-get update && sudo apt-get install -y openjdk-17-jdk
 
-      # 5. Build APK using Buildozer
+      # 5. Pre-accept Android SDK licenses
+      - name: Accept Android licenses
+        run: |
+          mkdir -p $HOME/.android
+          yes | buildozer android update sdk
+
+      # 6. Build APK using Buildozer
       - name: Build APK
         run: buildozer -v android debug
 
-      # 6. Upload APK as artifact
+      # 7. Upload APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
