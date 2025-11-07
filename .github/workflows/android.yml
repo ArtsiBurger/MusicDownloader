@@ -1,47 +1,54 @@
-name: Build MusicScripts APK
+name: Build MusicController APK
 
 on:
+  push:
+    branches:
+      - master
   workflow_dispatch:
 
 jobs:
-  build:
+  android:
     runs-on: ubuntu-latest
     env:
-      ANDROID_SDK_ROOT: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
-      ANDROID_NDK_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-ndk-r25b
-      PATH: ${{ github.workspace }}/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin:$PATH
+      ANDROIDSDK: $HOME/.buildozer/android/platform/android-sdk
+      ANDROIDNDK: $HOME/.buildozer/android/platform/android-ndk-r25b
+      ANDROIDAPI: 31
+      ANDROIDMINAPI: 21
+      PATH: $HOME/.local/bin:$PATH
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      # Ensure basic tools are installed
+      - name: Install essential tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tar unzip wget git python3-pip build-essential openjdk-17-jdk
 
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y python3 python3-pip python3-venv openjdk-17-jdk unzip wget tar git build-essential libncurses5
+      # Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Install Python dependencies
-      run: |
-        python3 -m pip install --upgrade pip
-        pip install cython buildozer
+      # Install pip packages needed for Buildozer
+      - name: Install Python packages
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install --user buildozer Cython==0.29.36 virtualenv python-for-android
 
-    - name: Setup Android SDK Commandline Tools
-      run: |
-        mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
-        cd $ANDROID_SDK_ROOT/cmdline-tools
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip -O tools.zip
-        unzip -o tools.zip
-        mv cmdline-tools latest
-        rm tools.zip
+      # Install Android SDK command-line tools
+      - name: Download and setup Android SDK command-line tools
+        run: |
+          mkdir -p $ANDROIDSDK/cmdline-tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip -d $ANDROIDSDK/cmdline-tools
+          mv $ANDROIDSDK/cmdline-tools/cmdline-tools $ANDROIDSDK/cmdline-tools/latest
+          rm cmdline-tools.zip
+          yes | $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager --licenses
 
-    - name: Accept Android SDK Licenses
-      run: |
-        yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+      # Install required SDK packages
+      - name: Install SDK build-tools and platforms
+        run: |
+          yes | $ANDROIDSDK/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-$ANDROIDAPI" "build-tools;36.1.0"
 
-    - name: Install Build Tools and Platforms
-      run: |
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;36.1.0"
-
-    - name: Run Buildozer
-      run: |
-        buildozer -v android debug
+      # Build APK using Buildozer
+      - name: Build APK
+        run: |
+          buildozer -v android debug
