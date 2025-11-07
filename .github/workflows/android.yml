@@ -5,52 +5,37 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+
+    env:
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
+      ANDROID_NDK_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-ndk-r25b
+      ANDROID_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
+      PATH: ${{ github.workspace }}/.buildozer/android/platform/android-sdk/tools:$PATH
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install system packages
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y \
-            openjdk-17-jdk \
-            autoconf \
-            libtool \
-            automake \
-            pkg-config \
-            build-essential \
-            unzip \
-            zlib1g-dev \
-            libffi-dev \
-            git \
-            wget \
-            python3-dev \
-            python3-pip
+          sudo apt-get install -y python3-pip openjdk-17-jdk unzip zip libncurses5 libstdc++6 autoconf
 
-      - name: Upgrade pip and install Buildozer
+      - name: Install Buildozer and Python-for-Android
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install --upgrade buildozer cython
+          pip install --upgrade pip
+          pip install buildozer python-for-android
 
-      - name: Build APK with Buildozer
+      - name: Prepare Android SDK and NDK
         run: |
-          buildozer android debug \
-            --arch=arm64-v8a \
-            --arch=armeabi-v7a \
-            android clean
-          buildozer android debug \
-            --arch=arm64-v8a \
-            --arch=armeabi-v7a
+          mkdir -p $ANDROID_SDK_ROOT
+          mkdir -p $ANDROID_NDK_HOME
+          # Accept SDK licenses automatically
+          yes | sdkmanager --licenses
+          # Install required build-tools and platforms
+          sdkmanager "platform-tools" "platforms;android-31" "build-tools;36.1.0"
 
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        with:
-          name: music-scripts-apk
-          path: bin/*.apk
+      - name: Build APK
+        run: |
+          buildozer android debug
