@@ -38,6 +38,12 @@ jobs:
           mkdir -p $HOME/.android
           yes | buildozer android update sdk
 
+      # 5a. Install build tools to fix autoreconf / libtool errors
+      - name: Install autotools and libtool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool pkg-config
+
       # 6. Build APK using Buildozer
       - name: Build APK
         run: buildozer -v android debug
