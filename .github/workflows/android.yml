@@ -9,51 +9,44 @@ on:
 jobs:
   android:
     runs-on: ubuntu-latest
+
     env:
       ANDROID_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
-      ANDROID_NDK_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-ndk-r25b
-      PATH: ${{ github.workspace }}/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin:${{ github.workspace }}/.buildozer/android/platform/android-sdk/platform-tools:$PATH
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
+      PATH: ${{ github.workspace }}/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin:${{ github.workspace }}/.buildozer/android/platform/android-sdk/platform-tools:${PATH}
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
+      - name: Ensure system tools
+        run: |
+          apt-get update
+          apt-get install -y tar unzip curl git python3-pip python3-venv build-essential wget
 
-    - name: Install build tools in user space
-      run: |
-        python -m pip install --upgrade pip setuptools wheel
-        python -m pip install --upgrade buildozer cython
+      - name: Set up Python
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install buildozer cython
 
-    - name: Ensure required tools
-      run: |
-        mkdir -p $HOME/.buildozer/tools
-        sudo apt-get update || true
-        sudo apt-get install -y tar unzip curl git python3-venv || true
+      - name: Install Android SDK Command Line Tools
+        run: |
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          rm cmdline-tools.zip
 
-    - name: Install Android SDK cmdline-tools
-      run: |
-        mkdir -p $ANDROID_HOME/cmdline-tools
-        cd $ANDROID_HOME/cmdline-tools
-        curl -o commandlinetools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip commandlinetools.zip
-        mv cmdline-tools latest
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
-    - name: Build APK
-      run: |
-        python -m venv venv
-        source venv/bin/activate
-        pip install --upgrade pip
-        pip install buildozer cython
-        buildozer android debug
+      - name: Install required SDK packages
+        run: |
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;36.1.0"
 
-    - name: Upload APK
-      if: success()
-      uses: actions/upload-artifact@v3
-      with:
-        name: MusicController-debug.apk
-        path: bin/*.apk
+      - name: Build APK with Buildozer
+        run: |
+          source venv/bin/activate
+          python -m buildozer android debug
