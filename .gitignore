@@ -1,0 +1,26 @@
+# Environment files
+*.env
+*.cache
+__pycache__/
+
+# OS-specific junk
+.DS_Store
+Thumbs.db
+
+# Python virtual environments
+venv/
+env/
+.venv/
+
+# Kivy build artifacts (inside KivyUI)
+KivyUI/.buildozer/
+KivyUI/bin/
+KivyUI/.gradle/
+KivyUI/__pycache__/
+KivyUI/venv/
+KivyUI/env/
+KivyUI/.venv/
+
+# Build logs or temporary files
+*.log
+*.spec
