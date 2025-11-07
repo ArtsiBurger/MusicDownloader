@@ -1,41 +1,50 @@
 name: Build MusicScripts APK
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      ANDROID_SDK_ROOT: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
-      ANDROID_NDK_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-ndk-r25b
-      ANDROID_HOME: ${{ github.workspace }}/.buildozer/android/platform/android-sdk
-      PATH: ${{ github.workspace }}/.buildozer/android/platform/android-sdk/tools:$PATH
-
     steps:
+      # 1. Checkout repository
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-pip openjdk-17-jdk unzip zip libncurses5 libstdc++6 autoconf
+      # 2. Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-      - name: Install Buildozer and Python-for-Android
+      # 3. Install Buildozer and Cython
+      - name: Install Python dependencies
         run: |
-          pip install --upgrade pip
-          pip install buildozer python-for-android
+          python -m pip install --upgrade pip
+          pip install cython
+          pip install --upgrade buildozer
 
-      - name: Prepare Android SDK and NDK
+      # 4. Install Java (required for Android build)
+      - name: Install Java
+        run: sudo apt-get update && sudo apt-get install -y openjdk-17-jdk
+
+      # 5. Pre-accept Android SDK licenses
+      - name: Accept Android licenses
         run: |
-          mkdir -p $ANDROID_SDK_ROOT
-          mkdir -p $ANDROID_NDK_HOME
-          # Accept SDK licenses automatically
-          yes | sdkmanager --licenses
-          # Install required build-tools and platforms
-          sdkmanager "platform-tools" "platforms;android-31" "build-tools;36.1.0"
+          mkdir -p $HOME/.android
+          yes | buildozer android update sdk
 
+      # 6. Build APK using Buildozer
       - name: Build APK
-        run: |
-          buildozer android debug
+        run: buildozer -v android debug
+
+      # 7. Upload APK as artifact
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: musicscripts-apk
+          path: bin/*.apk
