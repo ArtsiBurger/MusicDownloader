@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout your repository
+      # 1. Checkout repository
       - name: Checkout repo
         uses: actions/checkout@v3
 
@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      # 3. Upgrade pip and install Buildozer + Cython
+      # 3. Install Buildozer and Cython
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
@@ -32,10 +32,9 @@ jobs:
       - name: Install Java
         run: sudo apt-get update && sudo apt-get install -y openjdk-17-jdk
 
-      # 5. Build APK using Buildozer (Buildozer handles SDK/NDK download & licenses)
+      # 5. Build APK (Buildozer handles SDK/NDK download and license acceptance)
       - name: Build APK
-        run: |
-          buildozer -v android debug
+        run: buildozer -v android debug
 
       # 6. Upload APK as artifact
       - name: Upload APK
