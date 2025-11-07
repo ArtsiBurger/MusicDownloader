@@ -38,17 +38,17 @@ jobs:
           mkdir -p $HOME/.android
           yes | buildozer android update sdk
 
-      # 5a. Install build tools to fix autoreconf / libtool errors
-      - name: Install autotools and libtool
+      # 6. Install autotools & libtool to fix autoreconf errors
+      - name: Install autotools & libtool
         run: |
           sudo apt-get update
           sudo apt-get install -y autoconf automake libtool pkg-config
 
-      # 6. Build APK using Buildozer
+      # 7. Build APK using Buildozer
       - name: Build APK
         run: buildozer -v android debug
 
-      # 7. Upload APK as artifact
+      # 8. Upload APK as artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
